@@ -11,22 +11,25 @@ public class Player : MonoBehaviour {
 
     public float clampX;
     public float clampY;
+    public float timer;
+    public float shootInterval;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         canShoot = true;
 	}
 	
 	// Update is called once per frame
     void Update()
     {
-
+        timer += Time.deltaTime;
         float moveH = Input.GetAxis("Horizontal");
         float moveV = Input.GetAxis("Vertical");
 
         transform.Translate(moveH * speed, moveV * speed, 0);
         CheckBounds();
-        
+          
 
     }
 
@@ -37,20 +40,29 @@ public class Player : MonoBehaviour {
             Debug.Log("pew");
             Vector2 shootDirection = new Vector3(Input.GetAxis("HorizontalFire"), Input.GetAxis("VerticalFire")).normalized;
 
-            Shoot(shootDirection);
+            
+            if (timer >= shootInterval)
+            {
+                Shoot(shootDirection);
+                timer = 0;
+            }
+
         }
     }
 
     void Shoot(Vector2 shootDirection)
     {
+        
         GameObject go = (GameObject)Instantiate(bulletPrefab, new Vector3(transform.position.x,transform.position.y,0), Quaternion.identity);
         go.rigidbody2D.AddForce(shootDirection * bulletSpeed);
+        
     }
     void CheckBounds()
     {
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x, -clampX, clampX),
 		                                 Mathf.Clamp(transform.position.y, -clampY, clampY), transform.position.z);
 	}
+    
 }
 
 
