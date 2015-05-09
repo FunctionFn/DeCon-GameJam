@@ -62,6 +62,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+
     void Shoot(Vector2 shootDirection)
     {
         
@@ -88,6 +89,7 @@ public class Player : MonoBehaviour {
     {
         health -= dmg;
     }
+    
     
 }
 
