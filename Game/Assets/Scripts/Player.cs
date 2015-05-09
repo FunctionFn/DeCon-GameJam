@@ -50,6 +50,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+
     void Shoot(Vector2 shootDirection)
     {
         
@@ -62,6 +63,7 @@ public class Player : MonoBehaviour {
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x, -clampX, clampX),
 		                                 Mathf.Clamp(transform.position.y, -clampY, clampY), transform.position.z);
 	}
+    
     
 }
 
