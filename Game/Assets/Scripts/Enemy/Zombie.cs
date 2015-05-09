@@ -5,10 +5,6 @@ public class Zombie : Enemy {
 
     
 	// Use this for initialization
-	void Start () 
-    {
-        health = maxHealth;
-	}
 	
 	// Update is called once per frame
 	public override void Update () {
