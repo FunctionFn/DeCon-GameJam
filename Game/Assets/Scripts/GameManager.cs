@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if (Player.Inst.health < 0)
+        {
+            Application.LoadLevel(Application.loadedLevel);
+        }
 	}
 }

@@ -11,7 +11,8 @@ public class Zombie : Enemy {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	public override void Update () {
+        base.Update();
         transform.position += (target.position - transform.position).normalized * speed * Time.deltaTime;
 	}
 
