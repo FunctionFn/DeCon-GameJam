@@ -12,10 +12,30 @@ public class Player : MonoBehaviour {
     public GameObject bulletPrefab;
     public float bulletSpeed;
 
+    public string weapon;
+    public int ammo;
+    public bool bIsReloading;
+
     public float clampX;
     public float clampY;
     public float timer;
     public float shootInterval;
+
+
+    // Weapon Variables
+
+    public int pistolAmmo;
+    public float reloadTimer;
+    public float pistolReloadTime;
+
+
+
+
+
+
+
+
+
 
     //Instantiation
     private static Player _inst;
@@ -42,8 +62,17 @@ public class Player : MonoBehaviour {
 
         transform.Translate(moveH * speed * Time.deltaTime, moveV * speed * Time.deltaTime, 0);
         CheckBounds();
-          
 
+        if (!canShoot)
+        {
+            reloadTimer -= Time.deltaTime;
+        }
+        
+        if (reloadTimer <= 0 && !canShoot)
+        {
+            canShoot = true;
+            Refill(weapon);
+        }
     }
 
     void FixedUpdate()
@@ -65,9 +94,23 @@ public class Player : MonoBehaviour {
 
     void Shoot(Vector2 shootDirection)
     {
-        
-        GameObject go = (GameObject)Instantiate(bulletPrefab, new Vector3(transform.position.x,transform.position.y,0), Quaternion.identity);
-        go.rigidbody2D.AddForce(shootDirection * bulletSpeed);
+        switch (weapon)
+        {
+            case "pistol":
+                if (ammo > 0)
+                {
+                    GameObject go = (GameObject)Instantiate(bulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                    go.rigidbody2D.AddForce(shootDirection * bulletSpeed);
+                    ammo -= 1;
+                }
+                else
+                {
+                    Reload("pistol");
+                    
+                }
+                break;
+        }
+            
         
     }
     void CheckBounds()
@@ -88,6 +131,27 @@ public class Player : MonoBehaviour {
     public void Damage(int dmg)
     {
         health -= dmg;
+    }
+
+    public void Reload(string gun)
+    {
+        canShoot = false;
+        switch (gun)
+        {
+            case "pistol":
+                reloadTimer += pistolReloadTime;
+                break;
+        }
+    }
+
+    public void Refill(string gun)
+    {
+        switch (gun)
+        {
+            case "pistol":
+                ammo = pistolAmmo;
+                break;
+        }
     }
     
     
