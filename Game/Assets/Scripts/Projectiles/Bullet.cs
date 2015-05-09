@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyBullet : MonoBehaviour {
+public class Bullet : MonoBehaviour {
+
+    
 
 	// Use this for initialization
 	void Start () {
@@ -12,4 +14,11 @@ public class EnemyBullet : MonoBehaviour {
 	void Update () {
 	
 	}
+    
+    void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
+
+
 }

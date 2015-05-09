@@ -8,9 +8,15 @@ public class Enemy : MonoBehaviour {
     public float speed;
     public int maxHealth;
     public int health;
+
+
+    public bool bSpawnDisarm = true;
+    public float timerDisarm = 0f;
+    public float spawnDisarmTime;
 	// Use this for initialization
 	void Start () {
-	
+        bSpawnDisarm = true;
+        health = maxHealth;
 	}
 	
 	// Update is called once per frame
@@ -18,6 +24,14 @@ public class Enemy : MonoBehaviour {
         if (health <= 0)
         {
             Destroy(gameObject);
+            EnemyManager.Inst.enemiesRemaining -= 1;
+        }
+
+        timerDisarm += Time.deltaTime;
+
+        if (timerDisarm >= spawnDisarmTime)
+        {
+            bSpawnDisarm = false;
         }
 	}
 

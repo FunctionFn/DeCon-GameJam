@@ -78,7 +78,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.GetComponent<Enemy>())
+        if (other.gameObject.GetComponent<Enemy>() && !other.gameObject.GetComponent<Enemy>().bSpawnDisarm)
         {
             Debug.Log("ouch");
             Damage(other.gameObject.GetComponent<Enemy>().dmg);

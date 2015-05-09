@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bullet : MonoBehaviour {
+public class FriendlyBullet : Bullet {
 
     public int dmg;
 
@@ -15,12 +15,6 @@ public class Bullet : MonoBehaviour {
 	
 	}
 
-    void OnBecameInvisible()
-    {
-        Destroy(gameObject);
-    }
-
-
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.GetComponent<Zombie>())
@@ -30,6 +24,4 @@ public class Bullet : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-
 }
