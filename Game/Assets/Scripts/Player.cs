@@ -6,6 +6,9 @@ public class Player : MonoBehaviour {
     public float speed;
     public bool canShoot;
 
+    public int maxHealth;
+    public int health;
+
     public GameObject bulletPrefab;
     public float bulletSpeed;
 
@@ -14,10 +17,20 @@ public class Player : MonoBehaviour {
     public float timer;
     public float shootInterval;
 
+    //Instantiation
+    private static Player _inst;
+    public static Player Inst { get { return _inst; } }
+
+    void Awake()
+    {
+        _inst = this;
+    }
+
 	// Use this for initialization
 	void Start ()
     {
         canShoot = true;
+        health = maxHealth;
 	}
 	
 	// Update is called once per frame
@@ -27,7 +40,7 @@ public class Player : MonoBehaviour {
         float moveH = Input.GetAxis("Horizontal");
         float moveV = Input.GetAxis("Vertical");
 
-        transform.Translate(moveH * speed, moveV * speed, 0);
+        transform.Translate(moveH * speed * Time.deltaTime, moveV * speed * Time.deltaTime, 0);
         CheckBounds();
           
 
@@ -37,7 +50,6 @@ public class Player : MonoBehaviour {
     {
         if ((Input.GetAxis("HorizontalFire") != 0.0f || Input.GetAxis("VerticalFire") != 0.0f) && canShoot)
         {
-            Debug.Log("pew");
             Vector2 shootDirection = new Vector3(Input.GetAxis("HorizontalFire"), Input.GetAxis("VerticalFire")).normalized;
 
             
@@ -62,7 +74,20 @@ public class Player : MonoBehaviour {
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x, -clampX, clampX),
 		                                 Mathf.Clamp(transform.position.y, -clampY, clampY), transform.position.z);
 	}
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.GetComponent<Enemy>())
+        {
+            Debug.Log("ouch");
+            Damage(other.gameObject.GetComponent<Enemy>().dmg);
+        }
+    }
+
+    public void Damage(int dmg)
+    {
+        health -= dmg;
+    }
     
 }
-
 
