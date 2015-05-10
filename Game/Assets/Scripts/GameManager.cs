@@ -11,6 +11,14 @@ public class GameManager : MonoBehaviour {
 
     public int score;
 
+    // Pickups
+    public float timerPickup;
+    public float spawnPickupInterval;
+    public bool bPickupSpawned;
+
+    public GameObject mGunPickupPrefab;
+    public GameObject sGunPickupPrefab;
+
     //Instantiation
     private static GameManager _inst;
     public static GameManager Inst { get { return _inst; } }
@@ -24,6 +32,8 @@ public class GameManager : MonoBehaviour {
         healthText.GetComponent<Text>();
         ammoText.GetComponent<Text>();
         scoreText.GetComponent<Text>();
+
+        bPickupSpawned = false;
 	}
 	
 	// Update is called once per frame
@@ -45,5 +55,33 @@ public class GameManager : MonoBehaviour {
             ammoText.text = (Mathf.Round(Player.Inst.reloadTimer * 100)/10).ToString();
         }
 
+        if (bPickupSpawned == false)
+            timerPickup += Time.deltaTime;
+
+        if (timerPickup >= spawnPickupInterval)
+        {
+            timerPickup = 0;
+            SpawnPickup();
+            bPickupSpawned = true;
+        }
+
 	}
+
+    public void SpawnPickup()
+    {
+        Vector3 spawnPoint = new Vector3(
+            Random.Range(-Player.Inst.clampX, Player.Inst.clampX),
+            Random.Range(-Player.Inst.clampY, Player.Inst.clampY),
+            0f);
+        GameObject fgo;
+        switch (Random.Range(1,3))
+        {
+            case 1:
+                fgo = (GameObject)Instantiate(mGunPickupPrefab, spawnPoint, Quaternion.identity);
+                break;
+            case 2:
+                fgo = (GameObject)Instantiate(sGunPickupPrefab, spawnPoint, Quaternion.identity);
+                break;
+        }
+    }
 }

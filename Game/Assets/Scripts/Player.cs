@@ -34,12 +34,15 @@ public class Player : MonoBehaviour {
 
     public float machineGunShootInterval;
     public float machineGunShootTimer;
+    public int machineGunAmmo;
 
     public float shotGunShootInterval;
     public float shotGunShootTimer;
     public float shotGunOffset;
+    public int shotGunAmmo;
 
-
+    // Particle Systems
+    public ParticleSystem pickupPC;
 
     //Instantiation
     private static Player _inst;
@@ -202,6 +205,17 @@ public class Player : MonoBehaviour {
             Debug.Log("ouch");
             Damage(other.gameObject.GetComponent<Enemy>().dmg);
             Destroy(other.gameObject);
+        }
+        else if (other.gameObject.GetComponent<Pickup>())
+        {
+            weapon = other.gameObject.GetComponent<Pickup>().weapon;
+            ammo = other.gameObject.GetComponent<Pickup>().ammo;
+
+            GameManager.Inst.bPickupSpawned = false;
+
+            Destroy(other.gameObject);
+
+            ParticleSystem pc = (ParticleSystem)Instantiate(pickupPC, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
         }
     }
 
