@@ -15,6 +15,7 @@ public class EnemyManager : MonoBehaviour {
     public float wXSpawnDecrement;
 
     public int enemiesRemaining;
+    public int enemyCount;
 
     public int w1Enemies;
     public int w2Enemies;
@@ -32,6 +33,8 @@ public class EnemyManager : MonoBehaviour {
     public GameObject shooter;
 
     public int spawnRandomizer;
+    public float hiveSpeedIncreaseCoef;
+    public float hiveSpeedIncreaseExp;
 
     
 
@@ -168,6 +171,8 @@ public class EnemyManager : MonoBehaviour {
                     }
                     break;
             }
+            enemiesRemaining -= 1;
+            enemyCount += 1;
             spawnTimer = 0;
         }
     }
