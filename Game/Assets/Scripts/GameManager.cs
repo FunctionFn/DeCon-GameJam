@@ -88,8 +88,8 @@ public class GameManager : MonoBehaviour {
 
         if (deathTimer >= deathDuration)
         {
-           HighScoreManager._instance.SaveHighScore("Player", score);
-            Application.LoadLevel("HighScore");
+          
+            Application.LoadLevel("Level1");
         }
 
 	}

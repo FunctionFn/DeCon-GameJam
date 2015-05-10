@@ -172,6 +172,7 @@ public class Player : MonoBehaviour {
                     goL.transform.LookAt(transform.position + new Vector3(shootDirection.x, shootDirection.y, 0));
                     goL.rigidbody2D.AddForce(goL.transform.forward * bulletSpeed);
                     goL.rigidbody2D.AddForce(-goL.transform.up * shotGunOffset);
+                    goL.rigidbody2D.AddForce(-goL.transform.right * shotGunOffset);
 
                     float AngleRadL = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - goL.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - goL.transform.position.x);
                     // Get Angle in Degrees
@@ -187,6 +188,7 @@ public class Player : MonoBehaviour {
                     goR.transform.LookAt(transform.position + new Vector3(shootDirection.x, shootDirection.y, 0));
                     goR.rigidbody2D.AddForce(goR.transform.forward * bulletSpeed);
                     goR.rigidbody2D.AddForce(goR.transform.up * shotGunOffset);
+                    goR.rigidbody2D.AddForce(goR.transform.right * shotGunOffset);
                     float AngleRadR = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - goR.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - goR.transform.position.x);
                     // Get Angle in Degrees
                     float AngleDegR = (180 / Mathf.PI) * AngleRad;
