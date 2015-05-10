@@ -7,22 +7,44 @@ public class GameManager : MonoBehaviour {
     // UI Management
     public Text healthText;
     public Text ammoText;
-    
+    public Text scoreText;
 
+    public int score;
+
+    // Pickups
+    public float timerPickup;
+    public float spawnPickupInterval;
+    public bool bPickupSpawned;
+
+    public GameObject mGunPickupPrefab;
+    public GameObject sGunPickupPrefab;
+
+    //Instantiation
+    private static GameManager _inst;
+    public static GameManager Inst { get { return _inst; } }
+
+    void Awake()
+    {
+        _inst = this;
+    }
 	// Use this for initialization
 	void Start () {
         healthText.GetComponent<Text>();
         ammoText.GetComponent<Text>();
+        scoreText.GetComponent<Text>();
+
+        bPickupSpawned = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Player.Inst.health < 0)
+        if (Player.Inst.health <= 0)
         {
             Application.LoadLevel(Application.loadedLevel);
         }
 
         healthText.text = Player.Inst.health.ToString();
+        scoreText.text = GameManager.Inst.score.ToString();
 
         if (Player.Inst.canShoot)
         {
@@ -33,5 +55,33 @@ public class GameManager : MonoBehaviour {
             ammoText.text = (Mathf.Round(Player.Inst.reloadTimer * 100)/10).ToString();
         }
 
+        if (bPickupSpawned == false)
+            timerPickup += Time.deltaTime;
+
+        if (timerPickup >= spawnPickupInterval)
+        {
+            timerPickup = 0;
+            SpawnPickup();
+            bPickupSpawned = true;
+        }
+
 	}
+
+    public void SpawnPickup()
+    {
+        Vector3 spawnPoint = new Vector3(
+            Random.Range(-Player.Inst.clampX, Player.Inst.clampX),
+            Random.Range(-Player.Inst.clampY, Player.Inst.clampY),
+            0f);
+        GameObject fgo;
+        switch (Random.Range(1,3))
+        {
+            case 1:
+                fgo = (GameObject)Instantiate(mGunPickupPrefab, spawnPoint, Quaternion.identity);
+                break;
+            case 2:
+                fgo = (GameObject)Instantiate(sGunPickupPrefab, spawnPoint, Quaternion.identity);
+                break;
+        }
+    }
 }

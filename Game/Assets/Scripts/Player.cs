@@ -10,6 +10,8 @@ public class Player : MonoBehaviour {
     public int health;
 
     public GameObject bulletPrefab;
+    public GameObject mGunBulletPrefab;
+    public GameObject sGunBulletPrefab;
     public float bulletSpeed;
 
     public string weapon;
@@ -18,8 +20,8 @@ public class Player : MonoBehaviour {
 
     public float clampX;
     public float clampY;
-    public float timer;
-    public float shootInterval;
+    
+    
 
 
     // Weapon Variables
@@ -27,15 +29,20 @@ public class Player : MonoBehaviour {
     public int pistolAmmo;
     public float reloadTimer;
     public float pistolReloadTime;
+    public float pistolShootTimer;
+    public float pistolShootInterval;
 
+    public float machineGunShootInterval;
+    public float machineGunShootTimer;
+    public int machineGunAmmo;
 
+    public float shotGunShootInterval;
+    public float shotGunShootTimer;
+    public float shotGunOffset;
+    public int shotGunAmmo;
 
-
-
-
-
-
-
+    // Particle Systems
+    public ParticleSystem pickupPC;
 
     //Instantiation
     private static Player _inst;
@@ -56,7 +63,19 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
     void Update()
     {
-        timer += Time.deltaTime;
+        pistolShootTimer += Time.deltaTime;
+        machineGunShootTimer += Time.deltaTime;
+        shotGunShootTimer += Time.deltaTime;
+    }
+
+    void FixedUpdate()
+    {
+        if ((Input.GetAxis("HorizontalFire") != 0.0f || Input.GetAxis("VerticalFire") != 0.0f) && canShoot)
+        {
+            Vector2 shootDirection = new Vector3(Input.GetAxis("HorizontalFire"), Input.GetAxis("VerticalFire")).normalized;
+            Shoot(shootDirection);
+        }
+
         float moveH = Input.GetAxis("Horizontal");
         float moveV = Input.GetAxis("Vertical");
 
@@ -67,27 +86,11 @@ public class Player : MonoBehaviour {
         {
             reloadTimer -= Time.deltaTime;
         }
-        
+
         if (reloadTimer <= 0 && !canShoot)
         {
             canShoot = true;
             Refill(weapon);
-        }
-    }
-
-    void FixedUpdate()
-    {
-        if ((Input.GetAxis("HorizontalFire") != 0.0f || Input.GetAxis("VerticalFire") != 0.0f) && canShoot)
-        {
-            Vector2 shootDirection = new Vector3(Input.GetAxis("HorizontalFire"), Input.GetAxis("VerticalFire")).normalized;
-
-            
-            if (timer >= shootInterval)
-            {
-                Shoot(shootDirection);
-                timer = 0;
-            }
-
         }
     }
 
@@ -97,16 +100,92 @@ public class Player : MonoBehaviour {
         switch (weapon)
         {
             case "pistol":
-                if (ammo > 0)
+                if (ammo > 0 && pistolShootTimer >= pistolShootInterval)
                 {
                     GameObject go = (GameObject)Instantiate(bulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                    go.transform.LookAt(transform.position + new Vector3(shootDirection.x,shootDirection.y,0));
+                    go.rigidbody2D.AddForce(go.transform.forward * bulletSpeed);
+
+                    float AngleRad = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - go.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - go.transform.position.x);
+                    // Get Angle in Degrees
+                    float AngleDeg = (180 / Mathf.PI) * AngleRad;
+                    // Rotate Object
+                    go.transform.rotation = Quaternion.Euler(0, 0, AngleDeg);
+
+                    go.transform.Rotate(0, 0, 90);
+
+                    ammo -= 1;
+                    pistolShootTimer = 0;
+                }
+                if (ammo <= 0)
+                {
+                    Reload();
+                    
+                }
+                break;
+            case "machinegun":
+                if (ammo > 0 && machineGunShootTimer > machineGunShootInterval)
+                {
+                    GameObject go = (GameObject)Instantiate(mGunBulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
                     go.rigidbody2D.AddForce(shootDirection * bulletSpeed);
                     ammo -= 1;
+                    machineGunShootTimer = 0;
                 }
-                else
+                if (ammo <= 0)
                 {
-                    Reload("pistol");
+                    Reload();
+                }
+
+                break;
+            case "shotgun":
+                if (ammo > 0 && shotGunShootTimer > shotGunShootInterval)
+                {
+                    GameObject go = (GameObject)Instantiate(sGunBulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                    go.transform.LookAt(transform.position + new Vector3(shootDirection.x, shootDirection.y, 0));
+                    go.rigidbody2D.AddForce(go.transform.forward * bulletSpeed);
+
+                    float AngleRad = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - go.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - go.transform.position.x);
+                    // Get Angle in Degrees
+                    float AngleDeg = (180 / Mathf.PI) * AngleRad;
+                    // Rotate Object
+                    go.transform.rotation = Quaternion.Euler(0, 0, AngleDeg);
+
+                    go.transform.Rotate(0, 0, 90);
+
+                    GameObject goL = (GameObject)Instantiate(sGunBulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                    goL.transform.LookAt(transform.position + new Vector3(shootDirection.x, shootDirection.y, 0));
+                    goL.rigidbody2D.AddForce(goL.transform.forward * bulletSpeed);
+                    goL.rigidbody2D.AddForce(-goL.transform.up * shotGunOffset);
+
+                    float AngleRadL = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - goL.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - goL.transform.position.x);
+                    // Get Angle in Degrees
+                    float AngleDegL = (180 / Mathf.PI) * AngleRad;
+                    // Rotate Object
+                    goL.transform.rotation = Quaternion.Euler(0, 0, AngleDeg);
+
+                    goL.transform.Rotate(0, 0, 90);
+
+
+
+                    GameObject goR = (GameObject)Instantiate(sGunBulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                    goR.transform.LookAt(transform.position + new Vector3(shootDirection.x, shootDirection.y, 0));
+                    goR.rigidbody2D.AddForce(goR.transform.forward * bulletSpeed);
+                    goR.rigidbody2D.AddForce(goR.transform.up * shotGunOffset);
+                    float AngleRadR = Mathf.Atan2((transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).y - goR.transform.position.y, (transform.position + new Vector3(shootDirection.x, shootDirection.y, 0)).x - goR.transform.position.x);
+                    // Get Angle in Degrees
+                    float AngleDegR = (180 / Mathf.PI) * AngleRad;
+                    // Rotate Object
+                    goR.transform.rotation = Quaternion.Euler(0, 0, AngleDeg);
+
+                    goR.transform.Rotate(0, 0, 90);
                     
+                    
+                    ammo -= 1;
+                    shotGunShootTimer = 0;
+                }
+                if (ammo <= 0)
+                {
+                    Reload();
                 }
                 break;
         }
@@ -125,6 +204,18 @@ public class Player : MonoBehaviour {
         {
             Debug.Log("ouch");
             Damage(other.gameObject.GetComponent<Enemy>().dmg);
+            Destroy(other.gameObject);
+        }
+        else if (other.gameObject.GetComponent<Pickup>())
+        {
+            weapon = other.gameObject.GetComponent<Pickup>().weapon;
+            ammo = other.gameObject.GetComponent<Pickup>().ammo;
+
+            GameManager.Inst.bPickupSpawned = false;
+
+            Destroy(other.gameObject);
+
+            ParticleSystem pc = (ParticleSystem)Instantiate(pickupPC, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
         }
     }
 
@@ -133,15 +224,13 @@ public class Player : MonoBehaviour {
         health -= dmg;
     }
 
-    public void Reload(string gun)
+    public void Reload()
     {
         canShoot = false;
-        switch (gun)
-        {
-            case "pistol":
-                reloadTimer += pistolReloadTime;
-                break;
-        }
+        reloadTimer += pistolReloadTime;
+        weapon = "pistol";
+        
+
     }
 
     public void Refill(string gun)
