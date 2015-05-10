@@ -6,6 +6,8 @@ public class Player : MonoBehaviour {
     public float speed;
     public bool canShoot;
 
+    public bool bIsDead;
+
     public int maxHealth;
     public int health;
 
@@ -20,8 +22,6 @@ public class Player : MonoBehaviour {
 
     public float clampX;
     public float clampY;
-    
-    
 
 
     // Weapon Variables
@@ -58,6 +58,7 @@ public class Player : MonoBehaviour {
     {
         canShoot = true;
         health = maxHealth;
+        bIsDead = false;
 	}
 	
 	// Update is called once per frame
@@ -102,6 +103,7 @@ public class Player : MonoBehaviour {
             case "pistol":
                 if (ammo > 0 && pistolShootTimer >= pistolShootInterval)
                 {
+                    
                     GameObject go = (GameObject)Instantiate(bulletPrefab, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
                     go.transform.LookAt(transform.position + new Vector3(shootDirection.x,shootDirection.y,0));
                     go.rigidbody2D.AddForce(go.transform.forward * bulletSpeed);
@@ -203,6 +205,7 @@ public class Player : MonoBehaviour {
         if (other.gameObject.GetComponent<Enemy>() && !other.gameObject.GetComponent<Enemy>().bSpawnDisarm)
         {
             Debug.Log("ouch");
+            GameManager.Inst.PunchCamera(1);
             Damage(other.gameObject.GetComponent<Enemy>().dmg);
             Destroy(other.gameObject);
         }
@@ -216,11 +219,13 @@ public class Player : MonoBehaviour {
             Destroy(other.gameObject);
 
             ParticleSystem pc = (ParticleSystem)Instantiate(pickupPC, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+            Destroy(pc, pc.duration + .5f);
         }
     }
 
     public void Damage(int dmg)
     {
+        iTween.ShakeScale(gameObject, new Vector3(1.3f, 1.3f, 0f), .5f);
         health -= dmg;
     }
 

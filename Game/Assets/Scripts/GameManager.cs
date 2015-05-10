@@ -9,6 +9,14 @@ public class GameManager : MonoBehaviour {
     public Text ammoText;
     public Text scoreText;
 
+    public GameObject sceneCamera;
+
+    public float punchX;
+    public float punchY;
+    public float punchZ;
+    public float punchTime;
+
+
     public int score;
 
     // Pickups
@@ -40,7 +48,7 @@ public class GameManager : MonoBehaviour {
 	void Update () {
         if (Player.Inst.health <= 0)
         {
-            Application.LoadLevel(Application.loadedLevel);
+            Player.bIsDead = true;
         }
 
         healthText.text = Player.Inst.health.ToString();
@@ -83,5 +91,10 @@ public class GameManager : MonoBehaviour {
                 fgo = (GameObject)Instantiate(sGunPickupPrefab, spawnPoint, Quaternion.identity);
                 break;
         }
+    }
+
+    public void PunchCamera(float mult)
+    {
+        iTween.PunchPosition(sceneCamera, new Vector3 (punchX * mult, punchY * mult, punchZ * mult), punchTime * mult);
     }
 }

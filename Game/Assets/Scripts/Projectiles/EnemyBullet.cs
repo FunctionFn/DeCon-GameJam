@@ -9,8 +9,9 @@ public class EnemyBullet : Bullet {
     {
         if (other.gameObject.GetComponent<Player>())
         {
+            GameManager.Inst.PunchCamera(1f);
             other.gameObject.GetComponent<Player>().Damage(dmg);
-
+            
             Destroy(gameObject);
         }
     }
