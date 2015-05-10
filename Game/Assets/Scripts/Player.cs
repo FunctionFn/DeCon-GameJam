@@ -12,6 +12,7 @@ public class Player : MonoBehaviour {
     public int health;
 
     public AudioClip clip;
+    public AudioClip reloadClip;
 
     public GameObject bulletPrefab;
     public GameObject mGunBulletPrefab;
@@ -251,10 +252,11 @@ public class Player : MonoBehaviour {
         canShoot = false;
         reloadTimer += pistolReloadTime;
         weapon = "pistol";
+        AudioSource.PlayClipAtPoint(reloadClip, transform.position);
         
 
     }
-
+    
     public void Refill(string gun)
     {
         switch (gun)

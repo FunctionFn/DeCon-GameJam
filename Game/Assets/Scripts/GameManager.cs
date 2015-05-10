@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
     public Text healthText;
     public Text ammoText;
     public Text scoreText;
+    public Text waveText;
 
     public GameObject sceneCamera;
 
@@ -60,7 +61,8 @@ public class GameManager : MonoBehaviour {
         }
 
         healthText.text = Player.Inst.health.ToString();
-        scoreText.text = GameManager.Inst.score.ToString();
+        scoreText.text = score.ToString();
+        waveText.text = EnemyManager.Inst.wave.ToString();
 
         if (Player.Inst.canShoot)
         {
