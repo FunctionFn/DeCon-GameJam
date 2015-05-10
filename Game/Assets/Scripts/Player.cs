@@ -11,6 +11,8 @@ public class Player : MonoBehaviour {
     public int maxHealth;
     public int health;
 
+    public AudioClip clip;
+
     public GameObject bulletPrefab;
     public GameObject mGunBulletPrefab;
     public GameObject sGunBulletPrefab;
@@ -67,11 +69,16 @@ public class Player : MonoBehaviour {
         pistolShootTimer += Time.deltaTime;
         machineGunShootTimer += Time.deltaTime;
         shotGunShootTimer += Time.deltaTime;
+
+        if (health < 0)
+        {
+            health = 0;
+        }
     }
 
     void FixedUpdate()
     {
-        if ((Input.GetAxis("HorizontalFire") != 0.0f || Input.GetAxis("VerticalFire") != 0.0f) && canShoot)
+        if ((Input.GetAxis("HorizontalFire") != 0.0f || Input.GetAxis("VerticalFire") != 0.0f) && canShoot && !bIsDead)
         {
             Vector2 shootDirection = new Vector3(Input.GetAxis("HorizontalFire"), Input.GetAxis("VerticalFire")).normalized;
             Shoot(shootDirection);
@@ -79,9 +86,16 @@ public class Player : MonoBehaviour {
 
         float moveH = Input.GetAxis("Horizontal");
         float moveV = Input.GetAxis("Vertical");
-
-        transform.Translate(moveH * speed * Time.deltaTime, moveV * speed * Time.deltaTime, 0);
+        if (!bIsDead)
+        {
+            transform.Translate(moveH * speed * Time.deltaTime, moveV * speed * Time.deltaTime, 0);
+        }
         CheckBounds();
+
+        if (bIsDead)
+        {
+            gameObject.GetComponent<CircleCollider2D>().enabled = false;
+        }
 
         if (!canShoot)
         {
@@ -226,6 +240,7 @@ public class Player : MonoBehaviour {
     public void Damage(int dmg)
     {
         iTween.ShakeScale(gameObject, new Vector3(1.3f, 1.3f, 0f), .5f);
+        AudioSource.PlayClipAtPoint(clip, transform.position);
         health -= dmg;
     }
 

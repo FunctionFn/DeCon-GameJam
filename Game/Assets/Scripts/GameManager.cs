@@ -4,6 +4,12 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+    // Death
+
+    public float deathDuration;
+    public float deathTimer;
+
+    public AudioSource src;
     // UI Management
     public Text healthText;
     public Text ammoText;
@@ -42,13 +48,15 @@ public class GameManager : MonoBehaviour {
         scoreText.GetComponent<Text>();
 
         bPickupSpawned = false;
+
+        src.time = 60;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (Player.Inst.health <= 0)
         {
-            Player.bIsDead = true;
+            Player.Inst.bIsDead = true;
         }
 
         healthText.text = Player.Inst.health.ToString();
@@ -71,6 +79,17 @@ public class GameManager : MonoBehaviour {
             timerPickup = 0;
             SpawnPickup();
             bPickupSpawned = true;
+        }
+
+        if (Player.Inst.bIsDead)
+        {
+            deathTimer += Time.deltaTime;
+        }
+
+        if (deathTimer >= deathDuration)
+        {
+           HighScoreManager._instance.SaveHighScore("Player", score);
+            Application.LoadLevel("HighScore");
         }
 
 	}
@@ -96,5 +115,10 @@ public class GameManager : MonoBehaviour {
     public void PunchCamera(float mult)
     {
         iTween.PunchPosition(sceneCamera, new Vector3 (punchX * mult, punchY * mult, punchZ * mult), punchTime * mult);
+    }
+
+    public void cameraColor(Color color)
+    {
+        sceneCamera.GetComponent<Camera>().backgroundColor = color;
     }
 }
